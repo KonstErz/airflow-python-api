@@ -16,7 +16,7 @@ Your version of the `apache-airflow` must be at least `2.6.3`
 installing from github repo:
 
 ```sh
-pip install ...
+pip install git+https://github.com/KonstErz/airflow-python-api
 ```
 
 Then import the package:
