@@ -3,6 +3,7 @@ import json
 import logging
 import urllib.request
 import urllib.error
+from typing import Union
 
 
 logger = logging.getLogger(__name__)
@@ -15,17 +16,21 @@ class ApiCore:
 
     def __init__(self, configuration):
         self.configuration = configuration
-        self.headers = {}
 
     def _set_proxies(self, request_obj):
         for pr_type, pr_addr in self.configuration.proxies.items():
             request_obj.set_proxy(pr_addr, pr_type)
         return request_obj
 
-    def get_basic_auth_token(self):
+    def _update_total_headers(self, current_headers: dict, total_headers: dict) -> dict:
+        for k, v in current_headers.items():
+            if k not in total_headers:
+                total_headers.update({k: v})
+        return total_headers
+
+    def get_basic_auth_token(self) -> str:
         """
         Get token for basic HTTP authentication
-        :return: str
         """
 
         username = self.configuration.username
@@ -33,33 +38,24 @@ class ApiCore:
 
         return base64.b64encode(f'{username}:{password}'.encode('ascii')).decode()
 
-    def get_headers(self, headers=None):
+    def get_headers(self, headers=None) -> dict:
         """
         Get default and additional HTTP headers
-        :return: dict
         """
 
-        self.headers = {
+        _headers = {
             'Accept': 'application/json',
             'Authorization': f'Basic {self.get_basic_auth_token()}'
         }
 
         if headers and isinstance(headers, dict):
-            for k, v in headers.items():
-                if k not in self.headers:
-                    self.headers.update({k: v})
+            _headers = self._update_total_headers(headers, _headers)
 
-        return self.headers
+        return _headers
 
-    def response_from_api(self, response_obj=None, code=None, message='OK', content=None):
+    def response_from_api(self, response_obj=None, code=None, message='OK', content=None) -> dict:
         """
         Accepts the response from API and remake it to default representation
-
-        :param response_obj: object of class http.client.HTTPResponse or urllib.error.HTTPError
-        :param code: HTTP status code, str
-        :param message: error description, str
-        :param content: response payload, dict
-        :return: dict of default response format
         """
 
         result = {
@@ -93,11 +89,9 @@ class ApiCore:
 
         return result
 
-    def get_request_body(self, body: dict):
+    def get_request_body(self, body: dict) -> Union[bytes, dict]:
         """
         Get a valid payload for a request
-
-        :return: bytes
         """
 
         try:
@@ -107,12 +101,9 @@ class ApiCore:
             return self.response_from_api(message=err.__str__())
         return payload
 
-    def make_request(self, request_obj):
+    def make_request(self, request_obj) -> dict:
         """
         Make a request to the API
-
-        :param request_obj: urllib.request.Request object
-        :return: dict
         """
 
         if self.configuration.proxies:

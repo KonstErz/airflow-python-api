@@ -14,7 +14,7 @@ class PostDAGRun(ApiCore):
         self.dag_id = dag_id
 
     @request_body_validator
-    def execute(self, data: dict):
+    def execute(self, data: dict) -> dict:
         url = get_full_uri(
             self.configuration.host,
             ['dags', self.dag_id, 'dagRuns']
@@ -40,7 +40,7 @@ class GetDAGRun(ApiCore):
         super().__init__(configuration)
         self.dag_id = dag_id
 
-    def execute(self, dag_run_id: str):
+    def execute(self, dag_run_id: str) -> dict:
         url = get_full_uri(
             self.configuration.host,
             ['dags', self.dag_id, 'dagRuns', dag_run_id]

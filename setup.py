@@ -8,7 +8,7 @@ def readme():
 
 setup(
   name='airflow-python-api',
-  version='1.0.0',
+  version='1.0.1',
   author='KonstErz',
   author_email='konstantin.yerzin@gmail.com',
   description='Python package for interacting with Airflow API (Stable)',

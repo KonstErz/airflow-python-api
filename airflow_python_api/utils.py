@@ -1,7 +1,8 @@
+from typing import List
 from airflow_python_api.exceptions import ApiValidationError
 
 
-def get_full_uri(base_path: str, uri_parts: list, endslash=False):
+def get_full_uri(base_path: str, uri_parts: List[str], endslash=False) -> str:
     """
     Returns full uri path from base path and sequences of uri parts;
     Endslash allows to finish '/' at the end of the uri path
